@@ -1,0 +1,59 @@
+{
+  "settings": [
+    {
+      "id": "time_now",
+      "name": "Reference time",
+      "description": "Select a reference time towards which your data are evaluated. Default is NOW.",
+      "defaultValue": null,
+      "type": "INSTANT"
+    },
+	{
+      "id": "time_dur",
+      "name": "Track time duration.",
+      "description": "Provide a time duration (in days) of how far in the past you want to plot your track(s).",
+      "defaultValue": null,
+      "type": "DOUBLE"
+    },
+	{
+      "id": "posi_lon",
+      "name": "Reference longitude",
+      "description": "Provide the longitude of the reference position to which daily distances will be calculated. If none provided the default is the first available position.",
+      "defaultValue": null,
+      "type": "DOUBLE"
+	},
+	{
+      "id": "posi_lat",
+      "name": "Reference latitude",
+      "description": "Provide the latitude of the reference position to which daily distances will be calculated. If none provided the default is the first available position.",
+      "defaultValue": null,
+      "type": "DOUBLE"
+	}
+    
+  ],
+  "dependencies": {
+    "R": [
+      {
+        "name": "move"
+      },
+      {
+        "name": "foreach"
+      },
+	        {
+        "name": "ggplot2"
+      },
+	        {
+        "name": "geosphere"
+      },
+	        {
+        "name": "grid"
+      },
+	        {
+        "name": "gridExtra"
+      },
+	        {
+        "name": "reshape2"
+      }
+    ]
+  },
+  "createsArtifacts": true
+}
