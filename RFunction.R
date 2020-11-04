@@ -2,6 +2,7 @@ library('move')
 library('foreach')
 library('ggplot2')
 library('geosphere')
+library('sf')
 library('grid')
 library('gridExtra')
 library('reshape2')
@@ -14,6 +15,11 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
   
   data_spl <- move::split(data)
   ids <- namesIndiv((data))
+  if (is.null(time_dur))
+  {
+    time_dur <- 10
+    logger.info("You did not provide a time duration for your plot. It is set to 10 days by default.")
+  }
   time0 <- time_now - as.difftime(time_dur,units="days")
   
   g <- list()
@@ -43,8 +49,17 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
           if (length(ix)>1) sum(distVincentyEllipsoid(coordinates(datai_t[ix,])),na.rm=TRUE)/1000 else 0
         }
       
-      if (is.null(posi_lon)) lonZ <- coordinates(datai_t)[1,1] else lonZ <- posi_lon
-      if (is.null(posi_lat)) latZ <- coordinates(datai_t)[1,2] else latZ <- posi_lat
+      if (is.null(posi_lon)) 
+        {
+        lonZ <- coordinates(datai_t)[1,1] 
+        logger.info("You did not provide a position longitude. The first position of each animal is used for reference.")
+        } else lonZ <- posi_lon
+        
+      if (is.null(posi_lat))
+        {
+        latZ <- coordinates(datai_t)[1,2] 
+        logger.info("You did not provide a position latitude. The first position of each animal is used for reference.")
+        } else latZ <- posi_lat
       
       avgdaily_dist2posi <- foreach(dayi = days, .combine=c) %do% {
           ix <- which(as.Date(timestamps(datai_t))==dayi)

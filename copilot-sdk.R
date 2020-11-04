@@ -25,11 +25,9 @@ args <- list()
 #args[["timestamp_start"]] = "20130101000000000"
 #args[["timestamp_end"]] ="20131215000000000"
 args[["time_now"]] = "2014-02-15 12:00:00" #"2013-09-30 12:00:00"
-#args[["posi_lon"]] = NULL
-#args[["posi_lat"]] = NULL
-args[["attribs"]] = c("location_lat","tag_voltage","ground_speed")
-args[["time_dur"]] = 10
-
+args[["posi_lon"]] = NULL
+args[["posi_lat"]] = NULL
+args[["time_dur"]] = NULL
 
 #################################################################
 #################################################################
