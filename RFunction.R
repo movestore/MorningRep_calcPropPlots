@@ -80,12 +80,13 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
       } else logger.info(paste0("There are no locations available in the requested time window for individual ",ids[i]))
     }
 
-    pdf(paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"MorningReport_NSDdailyProp.pdf"),onefile=TRUE,paper="a4")
-    for (i in seq(along=g))
-    {
-      do.call("grid.arrange",g[[i]])
-    }
-    dev.off()
+    #pdf(paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"MorningReport_NSDdailyProp.pdf"),onefile=TRUE,paper="a4")
+    #pdf("MorningReport_NSDdailyProp.pdf",onefile=TRUE,paper="a4")
+    #for (i in seq(along=g))
+    #{
+    #  do.call("grid.arrange",g[[i]])
+    #}
+    #dev.off()
     
   return(data)
 }
