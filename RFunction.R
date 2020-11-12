@@ -19,7 +19,7 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
   {
     time_dur <- 10
     logger.info("You did not provide a time duration for your plot. It is set to 10 days by default.")
-  }
+  }  else  time_dur <- as.numeric(time_dur)
   time0 <- time_now - as.difftime(time_dur,units="days")
   
   g <- list()
