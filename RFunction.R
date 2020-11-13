@@ -19,10 +19,11 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
   {
     time_dur <- 10
     logger.info("You did not provide a time duration for your plot. It is set to 10 days by default.")
-  }  else  time_dur <- as.numeric(time_dur)
+  }  #else  time_dur <- as.numeric(time_dur)
   time0 <- time_now - as.difftime(time_dur,units="days")
   
   g <- list()
+  ids_g <- character()
   k <- 1
   for (i in seq(along=ids))
   {
@@ -75,18 +76,23 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
           facet_grid(variable ~ ., scales = "free_y") +
           geom_bar(stat="identity",colour="grey",width=0.3) +
           theme(plot.margin=grid::unit(c(1,2,0,2), "cm"))
+        ids_g <- c(ids_g,ids[i])
         k <- k+1
         
       } else logger.info(paste0("There are no locations available in the requested time window for individual ",ids[i]))
     }
 
-    #pdf(paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"MorningReport_NSDdailyProp.pdf"),onefile=TRUE,paper="a4")
+  if (length(ids_g)>0)
+  {
+    logger.info(paste0("Maps are produced for the individuals ",paste(ids_g,collapse=", "),", which have data in the requested time window."))
+    pdf(paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"MorningReport_NSDdailyProp.pdf"),onefile=TRUE,paper="a4")
     #pdf("MorningReport_NSDdailyProp.pdf",onefile=TRUE,paper="a4")
-    #for (i in seq(along=g))
-    #{
-    #  do.call("grid.arrange",g[[i]])
-    #}
-    #dev.off()
+    for (i in seq(along=g))
+    {
+      do.call("grid.arrange",g[[i]])
+    }
+    dev.off()
+  } else logger.info ("None of the individuals have data in the requested time window. Thus, no pdf artefact is generated.")
     
   return(data)
 }
