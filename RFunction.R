@@ -87,8 +87,8 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
   if (length(ids_g)>0)
   {
     logger.info(paste0("Maps are produced for the individuals ",paste(ids_g,collapse=", "),", which have data in the requested time window."))
-    #pdf(paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"MorningReport_NSDdailyProp.pdf"),onefile=TRUE,paper="a4")
-    pdf("MorningReport_NSDdailyProp.pdf",onefile=TRUE,paper="a4")
+    pdf(paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"MorningReport_NSDdailyProp.pdf"),onefile=TRUE,paper="a4")
+    #pdf("MorningReport_NSDdailyProp.pdf",onefile=TRUE,paper="a4")
     for (i in seq(along=g))
     {
       do.call("grid.arrange",g[[i]])
