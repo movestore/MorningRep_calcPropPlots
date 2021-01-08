@@ -71,11 +71,13 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
       
       dailyprop.df <- melt(dailyprop, measure.vars = names(dailyprop)[2:4])
         
+      var.names <- c(n_day="N Positions", displ_day="Displ. (km)", avgdaily_dist2posi="Dist. to Posi. (km)")
+      
         g[[k]][[2]] <- ggplot(dailyprop.df, aes(x = day, y = value)) +
           geom_line(aes(color = variable),show.legend=FALSE) +
-          facet_grid(variable ~ ., scales = "free_y") +
+          facet_grid(variable ~ ., scales = "free_y",labeller=labeller(.rows=var.names)) +
           geom_bar(stat="identity",colour="grey",width=0.3) +
-          theme(plot.margin=grid::unit(c(1,2,0,2), "cm"))
+          theme(plot.margin=grid::unit(c(1,2,0,2), "cm"), strip.text.y = element_text(size = 7), axis.text=element_text(size=7))
         ids_g <- c(ids_g,ids[i])
         k <- k+1
         
@@ -85,8 +87,8 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
   if (length(ids_g)>0)
   {
     logger.info(paste0("Maps are produced for the individuals ",paste(ids_g,collapse=", "),", which have data in the requested time window."))
-    pdf(paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"MorningReport_NSDdailyProp.pdf"),onefile=TRUE,paper="a4")
-    #pdf("MorningReport_NSDdailyProp.pdf",onefile=TRUE,paper="a4")
+    #pdf(paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"MorningReport_NSDdailyProp.pdf"),onefile=TRUE,paper="a4")
+    pdf("MorningReport_NSDdailyProp.pdf",onefile=TRUE,paper="a4")
     for (i in seq(along=g))
     {
       do.call("grid.arrange",g[[i]])
