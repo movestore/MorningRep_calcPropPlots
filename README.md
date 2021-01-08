@@ -7,7 +7,7 @@ Github repository: *github.com/movestore/MorningRep_calcPropPlots*
 This App creates a multipage pdf downloadable file with time-plots of calculated data attributes for each individual track: net square displacement, daily number of positions, daily travelled distance and average daily distance to a given position. So, you get additional information about your animals and tag performance. 
 
 ## Documentation
-A multipage pdf is created of 4 calculated data properties across time: net square displacement (in km, calculated by Vincenty Ellipsoid method), daily number of positions, daily travelled distance (sum of successive pairwise Vincenty Ellipsoid distances) and average daily distance to a given position. The plotted time window is defined by the reference timestamp (either user-defined or by default NOW) and the time duration that defines how long before the reference timestamp the x-axis of the plots shall start.
+A multipage pdf is created of 4 calculated data properties across time: net square displacement (in km, calculated by Vincenty Ellipsoid method), daily number of positions ("N Positions"), daily travelled distance in km (sum of successive pairwise Vincenty Ellipsoid distances; "Displacement (km)") and average daily distance to a given position in km ("Dist. to Posi. (km)"). The plotted time window is defined by the reference timestamp (either user-defined or by default NOW) and the time duration that defines how long before the reference timestamp the x-axis of the plots shall start.
 
 ### Input data
 moveStack in Movebank format
