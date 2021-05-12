@@ -24,7 +24,7 @@ args <- list()
 #args[["duplicates_handling"]] = "combi" #"first" or "combi"
 #args[["timestamp_start"]] = "20130101000000000"
 #args[["timestamp_end"]] ="20131215000000000"
-args[["time_now"]] = "2013-09-30 12:00:00"
+args[["time_now"]] = "2013-09-30T12:00:00.000Z"
 args[["posi_lon"]] = NULL
 args[["posi_lat"]] = NULL
 args[["time_dur"]] = NULL
