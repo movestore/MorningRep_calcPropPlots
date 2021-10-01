@@ -7,11 +7,11 @@ library('grid')
 library('gridExtra')
 library('reshape2')
 
-Sys.setenv(tz="GMT")
+Sys.setenv(tz="UTC")
 
 rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL, data, ...) { #dont give id selection option, but decide that only plot those with data in the time_dur window
   
-  if (is.null(time_now)) time_now <- Sys.time() else time_now <- as.POSIXct(time_now,format="%Y-%m-%dT%H:%M:%OSZ",tz="GMT")
+  if (is.null(time_now)) time_now <- Sys.time() else time_now <- as.POSIXct(time_now,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
   
   data_spl <- move::split(data)
   ids <- namesIndiv((data))
