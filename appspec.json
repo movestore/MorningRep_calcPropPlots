@@ -10,7 +10,7 @@
 	{
       "id": "time_dur",
       "name": "Track time duration.",
-      "description": "Provide a time duration (in days) of how far in the past you want to plot your track(s).",
+      "description": "Provide a time duration (in days) specifying how far in the past you want to plot your track(s). If no value is entered, default is 10 days.",
       "defaultValue": null,
       "type": "DOUBLE"
     },
