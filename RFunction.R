@@ -1,4 +1,5 @@
-library('move')
+library('move2')
+library("dplyr")
 library('foreach')
 library('ggplot2')
 library('geosphere')
@@ -9,92 +10,90 @@ library('reshape2')
 
 Sys.setenv(tz="UTC")
 
-rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL, data, ...) { #dont give id selection option, but decide that only plot those with data in the time_dur window
+# data <- readRDS("./data/raw/input2_move2loc_LatLon.rds")
+# time_now=max(mt_time(data))
+# time_dur=10
+# posi_lon=NULL
+# posi_lat=NULL
+
+
+rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL, data) { 
   
   if (is.null(time_now)) time_now <- Sys.time() else time_now <- as.POSIXct(time_now,format="%Y-%m-%dT%H:%M:%OSZ",tz="UTC")
   
-  data_spl <- move::split(data)
-  ids <- namesIndiv((data))
-  if (is.null(time_dur))
-  {
-    time_dur <- 10
-    logger.info("You did not provide a time duration for your plot. It is set to 10 days by default.")
-  }  #else  time_dur <- as.numeric(time_dur)
   time0 <- time_now - as.difftime(time_dur,units="days")
   
-  g <- list()
-  ids_g <- character()
-  k <- 1
-  for (i in seq(along=ids))
-  {
-    datai <- data_spl[[i]]
-    datai_t <- datai[timestamps(datai)>time0 & timestamps(datai)<time_now]
-    if (length(datai_t)>0)
-    {
-      g[[k]] <- list()
-      nsd <-(distVincentyEllipsoid(coordinates(datai_t),coordinates(datai_t)[1,])/1000)^2
-      nsd.df <- data.frame(nsd,"timestamp"=timestamps(datai_t))
-      g[[k]][[1]] <- ggplot(nsd.df,aes(x=timestamp,y=nsd)) +
-        ylab("net square displacement (km)") + 
+  dataPlot <-  data %>%
+    group_by(mt_track_id()) %>%
+    filter(mt_time() >= time0)
+  
+  if(nrow(dataPlot)>0){
+    
+    idall <- unique(mt_track_id(data))
+    idsel <- unique(mt_track_id(dataPlot))
+    if(!identical(idall, idsel)){logger.info(paste0("There are no locations available in the requested time window for track(s): ",paste0(idall[!idall%in%idsel], collapse = ", ")))}
+    
+    dataPlotTr <- split(dataPlot, mt_track_id(dataPlot))
+    gpL <- lapply(dataPlotTr, function(trk){
+      
+      ##NSD
+      nsd <-(distVincentyEllipsoid(st_coordinates(trk),st_coordinates(trk)[1,])/1000)^2
+      nsd.df <- data.frame(nsd,"timestamp"=mt_time(trk))
+      nsdgg <- ggplot(nsd.df,aes(x=timestamp,y=nsd)) +
+        ylab("Net Square Displacement [km]") + 
+        xlab("Timestamps") + 
         geom_line(colour=4) +
-        labs(title = paste("individual:",ids[i])) +
-        theme(plot.margin=grid::unit(c(0,2,0,2), "cm"))
-
-      days <- unique(as.Date(timestamps(datai_t)))
-      n_day <- foreach(dayi = days, .combine=c) %do% {
-          length(which(as.Date(timestamps(datai_t))==dayi))
-        }
-      displ_day <- foreach(dayi = days, .combine=c) %do% {
-          ix <- which(as.Date(timestamps(datai_t))==dayi)
-          if (!(1 %in% ix)) ix <- c(min(ix)-1,ix) #add last position before this day
-          if (length(ix)>1) sum(distVincentyEllipsoid(coordinates(datai_t[ix,])),na.rm=TRUE)/1000 else 0
-        }
+        labs(title = paste("Track:",unique(mt_track_id(trk)))) +
+        theme_bw()+
+        theme(plot.margin=grid::unit(c(1,2,1,2), "cm"))
       
-      if (is.null(posi_lon)) 
-        {
-        lonZ <- coordinates(datai_t)[1,1] 
-        logger.info("You did not provide a position longitude. The first position of each animal is used for reference.")
-        } else lonZ <- posi_lon
-        
-      if (is.null(posi_lat))
-        {
-        latZ <- coordinates(datai_t)[1,2] 
-        logger.info("You did not provide a position latitude. The first position of each animal is used for reference.")
-        } else latZ <- posi_lat
-      
-      avgdaily_dist2posi <- foreach(dayi = days, .combine=c) %do% {
-          ix <- which(as.Date(timestamps(datai_t))==dayi)
-          mean(distVincentyEllipsoid(coordinates(datai_t[ix,]),c(lonZ,latZ))/1000,rm.na=TRUE)
+      ## daily displacement
+      daysObj <- unique(as.Date(mt_time(trk)))
+      n_day <- foreach(dayi = daysObj, .combine=c) %do% {
+        length(which(as.Date(mt_time(trk))==dayi))
+      }
+      displ_day <- foreach(dayi = daysObj, .combine=c) %do% {
+        ix <- which(as.Date(mt_time(trk))==dayi)
+        if (!(1 %in% ix)) ix <- c(min(ix)-1,ix) #add last position before this day
+        if (length(ix)>1) sum(distVincentyEllipsoid(st_coordinates(trk[ix,])),na.rm=TRUE)/1000 else 0
       }
       
-      dailyprop <- data.frame("day"=days,n_day,displ_day,avgdaily_dist2posi)
+      if (is.null(posi_lon)){lonZ <- st_coordinates(trk)[1,1]} else {lonZ <- posi_lon}
+      if (is.null(posi_lat)){latZ <- st_coordinates(trk)[1,2]} else {latZ <- posi_lat}
       
+      avgdaily_dist2posi <- foreach(dayi = daysObj, .combine=c) %do% {
+        ix <- which(as.Date(mt_time(trk))==dayi)
+        mean(distVincentyEllipsoid(st_coordinates(trk[ix,]),c(lonZ,latZ))/1000,rm.na=TRUE)
+      }
+      
+      dailyprop <- data.frame("day"=daysObj,n_day,displ_day,avgdaily_dist2posi)
       dailyprop.df <- melt(dailyprop, measure.vars = names(dailyprop)[2:4])
-        
       var.names <- c(n_day="N Positions", displ_day="Displ. (km)", avgdaily_dist2posi="Dist. to Posi. (km)")
       
-        g[[k]][[2]] <- ggplot(dailyprop.df, aes(x = day, y = value)) +
-          geom_line(aes(color = variable),show.legend=FALSE) +
-          facet_grid(variable ~ ., scales = "free_y",labeller=labeller(.rows=var.names)) +
-          geom_bar(stat="identity",colour="grey",width=0.3) +
-          theme(plot.margin=grid::unit(c(1,2,0,2), "cm"), strip.text.y = element_text(size = 7), axis.text=element_text(size=7))
-        ids_g <- c(ids_g,ids[i])
-        k <- k+1
-        
-      } else logger.info(paste0("There are no locations available in the requested time window for individual ",ids[i]))
-    }
-
-  if (length(ids_g)>0)
-  {
-    logger.info(paste0("Maps are produced for the individuals ",paste(ids_g,collapse=", "),", which have data in the requested time window."))
-    pdf(paste0(Sys.getenv(x = "APP_ARTIFACTS_DIR", "/tmp/"),"MorningReport_NSDdailyProp.pdf"),onefile=TRUE,paper="a4")
-    #pdf("MorningReport_NSDdailyProp.pdf",onefile=TRUE,paper="a4")
-    for (i in seq(along=g))
-    {
-      do.call("grid.arrange",g[[i]])
+      dailygg <- ggplot(dailyprop.df, aes(x = day, y = value)) +
+        # geom_line(aes(color = variable),show.legend=FALSE) +
+        facet_grid(variable ~ ., scales = "free_y",labeller=labeller(.rows=var.names)) +
+        geom_bar(stat="identity",colour="grey",width=0.3) +
+        geom_line(aes(color = variable),show.legend=FALSE) +
+        ylab("") + 
+        xlab("Day") + 
+        theme_bw()+
+        theme(plot.margin=grid::unit(c(1,2,1,2), "cm"), strip.text.y = element_text(size = 7), axis.text=element_text(size=7))
+      
+      page_plot <- arrangeGrob(nsdgg, dailygg, ncol = 1, heights = c(0.5, 0.5))
+      return(page_plot)
+    })
+    
+    pdf(appArtifactPath("MorningReport_NSDdailyProp.pdf"),  height = 11.69,  width= 8.27)
+    # pdf("MorningReport_NSDdailyProp.pdf", height = 11.69,  width= 8.27) 
+    for (page in gpL) {
+      grid.newpage()
+      grid.draw(page)
     }
     dev.off()
-  } else logger.info ("None of the individuals have data in the requested time window. Thus, no pdf artefact is generated.")
     
+  }else{logger.info("None of the individuals have data in the requested time window. Thus, no pdf artefact is generated.")}
+  
   return(data)
 }
+
