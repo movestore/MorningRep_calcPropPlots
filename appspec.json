@@ -18,14 +18,14 @@
 	{
       "id": "posi_lon",
       "name": "Reference longitude",
-      "description": "Provide the longitude of the reference position to which daily distances will be calculated. If none provided, the default is the first available position.",
+      "description": "Provide the longitude of the reference position to which daily distances will be calculated. If none provided, the last position of each track is used.",
       "defaultValue": null,
       "type": "DOUBLE"
 	},
 	{
       "id": "posi_lat",
       "name": "Reference latitude",
-      "description": "Provide the latitude of the reference position to which daily distances will be calculated. If none provided, the default is the first available position.",
+      "description": "Provide the latitude of the reference position to which daily distances will be calculated. If none provided, the last position of each track is used.",
       "defaultValue": null,
       "type": "DOUBLE"
 	}
@@ -59,7 +59,7 @@
       "middleInitials": "K",
       "lastName": "Scharf",  
       "email": "ascharf@ab.mpg.de",
-      "roles": ["author", "creator"],
+      "roles": ["author", "compiler"],
       "orcid": "0000-0002-3357-8533",
       "affiliation": "Max-Planck-Institute of Animal Behavior",
       "affiliationRor": "https://ror.org/026stee22"
@@ -69,7 +69,7 @@
       "middleInitials": null,
       "lastName": "Kölzsch",
       "email": "akoelzsch@ab.mpg.de",
-      "roles": ["contributor"],
+      "roles": ["author","creator"],
       "orcid": "0000-0003-0193-1563",
       "affiliation": "Max-Planck-Institute of Animal Behavior",
       "affiliationRor": "https://ror.org/026stee22"

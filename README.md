@@ -7,7 +7,7 @@ Github repository: *github.com/movestore/MorningRep_calcPropPlots*
 This App creates a multipage pdf downloadable file with time-plots of calculated data attributes for each individual track: net square displacement, daily number of positions, daily traveled distance and average daily distance to a given position. So, you get additional information about your animals and tag performance. 
 
 ## Documentation
-A multipage pdf is created of 4 calculated data properties across time: net square displacement (in km, calculated by Vincenty Ellipsoid method), daily number of positions ("N Positions"), daily traveled distance in km (sum of successive pairwise Vincenty Ellipsoid distances; "Displ. (km)") and average daily distance to a given position in km ("Dist. to Posi. (km)"). The plotted time window is defined by the reference timestamp (either user-defined or by default NOW) and the time duration that defines how long before the reference timestamp the x-axis of the plots shall start.
+A multipage pdf is created of 4 calculated data properties across time: net square displacement (in km, calculated by Vincenty Ellipsoid method, the reference location or in its absence the last location of the track is used as the reference point), daily number of positions ("N Positions"), daily traveled distance in km (sum of successive pairwise Vincenty Ellipsoid distances; "Displ. (km)") and average daily distance to a  reference location or in its absence the last location of the track in km ("Dist. to Posi. (km)"). The plotted time window is defined by the reference timestamp (either user-defined or by default NOW) and the time duration that defines how long before the reference timestamp the x-axis of the plots shall start.
 
 ### Application scope
 #### Generality of App usability
@@ -30,9 +30,9 @@ The App should work for any kind of (location) data. Specially useful for live f
 
 **Track time duration. (`time_dur`):** time duration into the past that the attributes have to be plotted for. So, if the time duration is selected as 7 days then the x-axis ranges from the reference timestamp to 7 days before it. Unit: days
 
-**Reference longitude (`posi_lon`):** longitude of the position to which average daily distances are to be calculated. Typically this is the observer position in the field, if one wants to find out if any tagged animals are in the surroundings. This might be the catching site. If none provided the default is the first available position
+**Reference longitude (`posi_lon`):** longitude of the position to which average daily distances are to be calculated. Typically this is the observer position in the field, if one wants to find out if any tagged animals are in the surroundings. This might be the catching site. If none provided the last position of each track is used.
 
-**Reference latitude (`posi_lat`):** latitude of the position to which average daily distances are to be calculated. Typically this is the observer position in the field, if one wants to find out if any tagged animals are in the surroundings.This might be the catching site. If none provided the default is the first available position
+**Reference latitude (`posi_lat`):** latitude of the position to which average daily distances are to be calculated. Typically this is the observer position in the field, if one wants to find out if any tagged animals are in the surroundings.This might be the catching site. If none provided the last position of each track is used.
 
 
 ### Changes in output data

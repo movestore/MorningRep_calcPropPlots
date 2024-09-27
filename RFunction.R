@@ -36,8 +36,12 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
     dataPlotTr <- split(dataPlot, mt_track_id(dataPlot))
     gpL <- lapply(dataPlotTr, function(trk){
       
+      if (is.null(posi_lon)){lonZ <- st_coordinates(trk)[nrow(trk),1]} else {lonZ <- posi_lon}
+      if (is.null(posi_lat)){latZ <- st_coordinates(trk)[nrow(trk),2]} else {latZ <- posi_lat}
+      
       ##NSD
-      nsd <-(distVincentyEllipsoid(st_coordinates(trk),st_coordinates(trk)[1,])/1000)^2
+      
+      nsd <- (distVincentyEllipsoid(st_coordinates(trk),c(lonZ,latZ))/1000)^2
       nsd.df <- data.frame(nsd,"timestamp"=mt_time(trk))
       nsdgg <- ggplot(nsd.df,aes(x=timestamp,y=nsd)) +
         ylab("Net Square Displacement [km]") + 
@@ -58,8 +62,6 @@ rFunction = function(time_now=NULL, time_dur=NULL, posi_lon=NULL, posi_lat=NULL,
         if (length(ix)>1) sum(distVincentyEllipsoid(st_coordinates(trk[ix,])),na.rm=TRUE)/1000 else 0
       }
       
-      if (is.null(posi_lon)){lonZ <- st_coordinates(trk)[1,1]} else {lonZ <- posi_lon}
-      if (is.null(posi_lat)){latZ <- st_coordinates(trk)[1,2]} else {latZ <- posi_lat}
       
       avgdaily_dist2posi <- foreach(dayi = daysObj, .combine=c) %do% {
         ix <- which(as.Date(mt_time(trk))==dayi)
